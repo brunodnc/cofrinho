@@ -1,0 +1,256 @@
+~ basics ~
+
+to put variables inside vue template use {{ variable }}
+
+this variable is read as plainText, to put html use the attribute v-html - <span v-html="htmlToBeRendered"></span>
+
+directives starts with 'v-', and apply special reactive behavirou to DOM.
+
+Mustaches cannot be used inside html ATTRIBUTES, to use variables there v-bind is needed. - <div v-bind:class="variable"></div> (if variable is null or false the attribute will be removed)
+
+v-bind has a dedicated shorthand syntax: <div :id="variable"></div>
+
+for boolean html attributes (like disabled), it will be included in the html if the value is truthy or empty ("")
+
+You can bind object of attributes using v-bind: obj = {id: "id1", class: "mobile"}; <div v-bind:="obj"></>
+
+mustaches and vue directives support the full range of javascript expressions, but only a single expression
+
+Functions called inside binding expressions will be called everytime the component updates, so they should not have any side effects
+
+Vue templates also have a restricted access to global JS methods, but they can all be manually added by the people who knows what they are doing.
+
+
+~ vue directives ~
+
+
+Directives usually  accepts only one JS expression (expecions are v-for, v-on, v-slot)
+
+<div v-if="renderCondition">Am I Rendered?</div>
+
+Directives can accepts arguments, passed after ':', as it is the case with the v-bind, but also with v-on, which listens to DOM events
+
+<div v-on:click="count += 1">Counter {{count}}</div> (it can be also written as: <div @click="count += 1">Counter {{count}}</div>
+
+The argument can also be dynamically evaluated by using variables with square brackets []
+
+<div :[htmlAttribute]="functionThatDefinedhtmlAttributeBasedOnBusinessLogic"></div>
+
+if the dynamic argument evaluates to null, it removes the binding from the DOM, and as html do not support space and quotes inside a tag it should not be used, uppercase characters should be avoided too, as the browser usually turns them into lowercase
+
+vue directives can also have modifiers, denoted by a dot after the directive name, for example:
+
+<form @submit.prevent="onSubmit"></form>
+
+It will call on the triggered event event.preventDefault().
+
+
+~ class and style bindings ~
+
+
+The following example method can be used to easily toogle classes using an object
+
+<div :class="{ className: booleanValue }"></div>
+
+Arrays can be used as well
+
+<div :class="[classNameVariable, 'hardCodedClassName']></div>
+
+When talking about components and classes, if the component has only one root element, the element will maintain its classes and add the class recieved by the component call
+
+<MyComponent class="hello" /> ... (inside the component) <p class="world></p> # html rendered: <p class="hello world"><p/>
+
+If the the component have multiple root elements for it to recieve the class from the component call you need to define which one will recieve by using:
+
+<p :class="$attrs.class"></p>
+
+The inline style binding happens similarly to the class binding
+
+<div :style="{color: randomColorVariable, padding: dynamicPadding + 'px', backgroundColor: 'red' }"></div> (prefer using camelCase for the css attributes here, but Vue also accepts the traditional kebab-case
+
+
+~ conditional rendering ~ 
+
+
+As you saw above, v-if is an option for conditiona rendering
+
+But you can also use v-else-if or v-else to act on the negative v-if response
+
+<h1 v-if="condition">Appears or not</h1>
+<h1 v-else-if="condition2">Maybe this wil appear</h1>
+<h1 v-else-if="condition3">Maybe this wil appear</h1>
+<h1 v-else"> Else this appears appears</h1>
+
+v-else-if and v-else need to folow a v-if (or a v-if-else if the first on the chain is a v-if) statement or it wil not work
+
+v-if, v-else-if and v-else can be used on template to render multiples html elements, in this way the template will be an invisible mechanism that wraps them together
+
+there is another option that functions the same way as the v-if, it is the v-show
+
+the difference is that template does not support v-show, and v-show will always be rendered and will always remain in the DOM, what makes it disappear is only the css visibility.
+
+in this way, v-if has higher toggle cost and v-show has higher render cost, in most cases, if the condition wil be toogled often, use v-show, and use v-if if the condition will be toggled less often and the content is heavier
+
+when v-if and v-for are used in the same element, v-if have precedence and will be evaluated first
+
+
+~ list rendering ~
+
+v-for will render a list of items based on an array
+
+<li v-for="(item, index) in items">
+	{{item.description}} - {index}
+</li>
+
+v-for allows for destructuring
+
+
+<li v-for="({description}, index) of items">
+	{{description}} - {index}
+</li>
+
+For arrays you can use 'in' or 'of' inside the v-for
+
+v-for also iteretes over object keys, with:
+
+<li v-for="(value, key, index) in object">
+	{{value}} - {{key}} - {{index}}
+</li>
+
+v-for works with ranges as well
+
+<div v-for="n in 5">{{n}}</div>
+
+in the code above n starts at 1 and ends at 5, creating 5 divs.
+
+rendering multiple elements can be done applying v-for a trelto template
+
+vue maintains the placement integrity through all the dom changes with the key attribute for each item inide the v-for
+
+<div v-for="item in items" :key="item.id"></div>
+
+When using component with v-for you need to specifically send data to it, as each component have isolated scopes, for example:
+
+<Component v-for"(item, index) in items" :key="item.id" :item="item" />
+
+The reactivity of vue is capable of percieving changes of an array when the script uses the following mutation methods:
+
+push, pop, shift, unshift, splice, sort, reverse
+
+when working with non mutating mehods like filter() in vue there is a need to replace the array and thus 'force' the mutation, i.e. replacement of the old array by the new
+
+
+~ event handling ~
+
+v-on:click="handler"
+
+the v-on handler value can be an inline (executed directly on event trigger) or a method defined in the component
+
+v-on has also event modifier that can be added on v-directives
+
+<div @click.self="actionFunction"></div>
+
+.stop - stopPropagation90
+.prevent - PreventDefault()
+.self - only activates if the element is the event handler, not its child
+.capture - handles an inner target element's event first
+.once - trigger event once
+.passive - do not await event listener's action to complete before default behaviour
+
+with v-on you can also check for specific key clicks
+
+<input @keyup.enter="sendForm" />
+
+for keys you use js's KeyboardEvent.key list in kebab-case.
+
+Vue provides aliases for the most commonly used keys:
+
+.enter
+.tab
+.delete (captures both "Delete" and "Backspace" keys)
+.esc
+.space
+.up
+.down
+.left
+.right
+
+you can chain modifiers keys with other events
+
+.ctrl
+.alt
+.shift
+.meta (windows / cmd / meta)
+
+<div @click.ctrl="action">ctrl and click</div>
+
+check documentation for further details on key and event bindings
+
+
+~ form input binding ~
+
+
+Here is the way input are binded to vue script
+
+<input :value="text" @input="event => text = event.target.value" />
+
+but it can be shorthanded to:
+
+<input v-model="text">
+
+v-model can be used
+
+with text inputs and textarea using value property and input event
+with checkbox and radio buttons using checked property and change event
+with select using value as a property and change as event
+
+warning: v-model will ignore any initial value for inputs, it will always follow what the state of the javascript variable binded
+
+checkboxes in vue can be binded to an array, so that array will always contain the value of the checked checkboxes
+
+For v-model there are some handy modifiers
+
+.lazy - syncs the input value not 'on input' but 'on change'
+.number - casts the input value to number
+.trim
+
+
+~ lifecycle hooks ~
+
+
+There are a bunch of cycles in the life of a vue component
+
+the most common are mounted, updated and unmounted
+
+
+~ Watchers ~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
