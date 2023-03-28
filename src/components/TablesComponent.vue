@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import InitialTable from './InitialTable.vue';
 import TableComponent from './TableComponent.vue';
+import { invoke } from '@tauri-apps/api';
 
 
 const tables =  {
@@ -34,6 +35,7 @@ const tables =  {
 </script>
 
 <template>
+    {{ invoke('greet', { name: 'World'}) }}
     <h2>Finanças do mês</h2>
      <InitialTable />
      <template v-for="(table, i) in tables.in" :key="i +  ' - ' + table.name">
