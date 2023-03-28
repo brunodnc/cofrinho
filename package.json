@@ -10,7 +10,8 @@
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "debug": "set RUST_BACKTRACE=1 && tauri dev"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",

@@ -2,6 +2,7 @@
 import InitialTable from './InitialTable.vue';
 import TableComponent from './TableComponent.vue';
 import { invoke } from '@tauri-apps/api';
+import { store } from '@/state/store';
 
 
 const tables =  {
@@ -37,6 +38,7 @@ const tables =  {
 <template>
     {{ invoke('greet', { name: 'World'}) }}
     <h2>Finanças do mês</h2>
+    {{ store.selectedYYYYMM }}
      <InitialTable />
      <template v-for="(table, i) in tables.in" :key="i +  ' - ' + table.name">
         <TableComponent :values="table.values" :type="'in'" :name="table.name" />
