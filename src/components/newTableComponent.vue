@@ -1,29 +1,50 @@
 <template>
     <h3>Nova tabela</h3>
     <form>
-        <label for="tableNameInput">Nome da tabela: </label><input id="tableNameInput" v-model="tableName">
-        <label>Tipo: </label> <select v-model="tableType">
-            <option disabled value="">Selecionar</option>
-            <option>Tabela Inicial</option>
-            <option>Entrada</option>
-            <option>Saída</option>
+        <label>Tipo da tabela: </label> <select v-model="tableType">
+            <option disabled value="">Select Type</option>
+            <option>Initial Table</option>
+            <option>In</option>
+            <option>Out</option>
         </select>
+        <div v-if="tableType === 'In' || tableType === 'Out'">
+            <label for="tableNameInput">Table Name: </label>
+            <input id="tableNameInput" v-model="tableName">
+        </div>
+        <span id="error"> {{ error }}</span>
     </form>
-    <button @click="handleCreateTable">Criar tabela</button>
+    <button @click="handleCreateTable">Create Table</button>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import type { Ref } from 'vue';
 
 
-let tableName = "";
-let tableType = "";
+
+let error: Ref<null | string> = ref(null);
+let tableName: Ref<string> = ref("");
+let tableType: Ref<string> = ref("");
+
 
 function handleCreateTable() {
-    if (tableType.length < 1 || tableName.length < 1) {
-        alert("Preencha o formulário corretamente");
+    if (tableType.value.length < 1 || (tableName.value.length < 1 && (tableType.value === 'In' || tableType.value === 'Out'))) {
+        error.value = "Please fill the form correctly";
         return null;
     }
+    let newTable = null;
+    if (tableType.value === 'Initial Table') {
+        return null;
+    }
+    if (tableType.value === 'In') {
+        return null;
+    }
+    if (tableType.value === 'Out') {
+        return null;   
+    }
     // save table with tauri rust
-    return null;
+    newTable = null
+    
+    return newTable;
 }
 </script>

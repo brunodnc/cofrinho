@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import InitialTable from './InitialTable.vue';
 import TableComponent from './TableComponent.vue';
 import { invoke } from '@tauri-apps/api';
 import { store } from '@/state/store';
@@ -13,21 +12,22 @@ function handleToggleCreatingNewTable() {
     creatingNewTable.value = !creatingNewTable.value;
 }
 
-const initialTable = ref({
-        values: [
-            {
-                description: "Salário",
-                type: 'in',
-                value: 2800,
-            },
-            {
-                description: "Netflix",
-                type: 'out',
-                value: 100,
-            },
-        ]
-    });
 const tables =  {
+        "initial": [
+        {
+            name: "Tabela Inicial",
+            values: [
+                        {
+                            description: "Salário",
+                            value: 2800,
+                        },
+                        {
+                            description: "Netflix",
+                            value: -100,
+                        },
+                    ]
+                }
+            ],
         "in": [
             {
                 "name": "Entrada inicial",
@@ -61,8 +61,10 @@ const tables =  {
     <button @click="handleToggleCreatingNewTable">Nova Tabela</button>
     <NewTableComponent v-if="creatingNewTable"/>
     <!-- {{ invoke('greet', { name: 'World'}) }} -->
-    <h2>Finanças do mês</h2>    
-     <InitialTable :initialTable="initialTable" />
+    <h2>Monthly Finance </h2>
+    <template v-for="(table, i) in tables.initial" :key="i +  ' - ' + table.name">
+        <TableComponent :values="table.values" :type="'in'" :name="table.name" />
+     </template>
      <template v-for="(table, i) in tables.in" :key="i +  ' - ' + table.name">
         <TableComponent :values="table.values" :type="'in'" :name="table.name" />
      </template>
