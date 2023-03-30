@@ -1,13 +1,15 @@
 <template>
     <h3>Nova tabela</h3>
     <form>
-        <label>Tipo da tabela: </label> <select v-model="tableType">
+        <label>Table type: </label> <select v-model="tableType">
             <option disabled value="">Select Type</option>
-            <option>Initial Table</option>
-            <option>In</option>
-            <option>Out</option>
+            <option value="initial">Initial Table</option>
+            <option value="in">In</option>
+            <option value="out">Out</option>
         </select>
-        <div v-if="tableType === 'In' || tableType === 'Out'">
+        <div v-if="tableType === 'initial'">
+        </div>
+        <div v-if="tableType === 'in' || tableType === 'out'">
             <label for="tableNameInput">Table Name: </label>
             <input id="tableNameInput" v-model="tableName">
         </div>
@@ -28,18 +30,18 @@ let tableType: Ref<string> = ref("");
 
 
 function handleCreateTable() {
-    if (tableType.value.length < 1 || (tableName.value.length < 1 && (tableType.value === 'In' || tableType.value === 'Out'))) {
+    if (tableType.value.length < 1 || (tableName.value.length < 1 && (tableType.value === 'in' || tableType.value === 'out'))) {
         error.value = "Please fill the form correctly";
         return null;
     }
     let newTable = null;
-    if (tableType.value === 'Initial Table') {
+    if (tableType.value === 'initial') {
         return null;
     }
-    if (tableType.value === 'In') {
+    if (tableType.value === 'in') {
         return null;
     }
-    if (tableType.value === 'Out') {
+    if (tableType.value === 'out') {
         return null;   
     }
     // save table with tauri rust
