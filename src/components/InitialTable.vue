@@ -1,21 +1,17 @@
 <script setup lang="ts">
-    const initialTable = {
-        values: [
-            {
-                description: "Salário",
-                type: 'in',
-                value: 2800,
-            },
-            {
-                description: "Netflix",
-                type: 'out',
-                value: 100,
-            },
-        ]
-    }
+const props = defineProps({
+  initialTable: {
+    type: Object,
+    required: true,
+    default: () => ({
+      values: []
+    })
+  }
+});
 </script>
 
 <template>
+    <h3>Initial Table</h3>
     <table>
         <tr>
             <th>Description</th>

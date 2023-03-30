@@ -5,7 +5,6 @@
 <template>
     <header class="grid">
         <h1>Cofrinho</h1>
-        <button>Nova Tabela</button>
         <button>Analise</button>
     </header>
 </template>
