@@ -1,9 +1,14 @@
 import { reactive } from 'vue';
 
 export const store = reactive({
-    selectedYYYYMM: "2023-3",
-    setSelectedYYYYMM(year: number, month: number) {
-        this.selectedYYYYMM = year + "-" + month;
+    _selectedYYYYMM: new Date().getFullYear() + "-" + (new Date().getMonth() + 1),
+    getSelectedYYYYMM(): string {
+        return this._selectedYYYYMM;
+    },
+    setSelectedYYYYMM(year: number, month: number): void {
+        this._selectedYYYYMM = year + "-" + month;
+    },
+    setDateToSelectedYYYYMM(date: Date): void {
+        this._selectedYYYYMM = date.getFullYear() + "-" + (date.getMonth() + 1);
     }
-
 });

@@ -38,7 +38,7 @@ const tables =  {
 <template>
     {{ invoke('greet', { name: 'World'}) }}
     <h2>Finanças do mês</h2>
-    {{ store.selectedYYYYMM }}
+    {{ store.getSelectedYYYYMM() }}
      <InitialTable />
      <template v-for="(table, i) in tables.in" :key="i +  ' - ' + table.name">
         <TableComponent :values="table.values" :type="'in'" :name="table.name" />

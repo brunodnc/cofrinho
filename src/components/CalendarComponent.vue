@@ -1,41 +1,41 @@
 <script setup lang="ts">
-const months: number[] = [1, 2, 3, 4, 5, 6, 7, 8 , 9, 10, 11, 12];
-const year = 2023;
+import { MonthPicker } from 'vue-month-picker';
+import { store } from '@/state/store';
+import { ref } from 'vue';
 
-const currentYear = new Date().getFullYear();
+let showCalendar = ref(false);
 
-// TODO: need to get lowest year that exists an table in the user's data folder if it does not have an lowest year: 
-function getLowestYearThatATableExists() {
-    // if lowestYearTable exists... return year, else...
-    return new Date().getFullYear();
+function handleToggleShowCalendar() {
+    showCalendar.value = !showCalendar.value;
 }
 
-const lowestYear = getLowestYearThatATableExists()
+let splittedSelectedYYYYMM = store.getSelectedYYYYMM().split("-");
+let selectedYear = Number(splittedSelectedYYYYMM[0]);
+let selectedMonth = Number(splittedSelectedYYYYMM[1]);
 
-const years: number[] = [];
-if (lowestYear !== currentYear) {
-    for (let i = lowestYear; i <= currentYear; i += 1) {
-        years.push(i);
-    }
-} else {
-    years.push(year);
+
+function selectYearMonth(event: {from: Date, to: Date}) {
+    const selectedDate: Date = event.from;
+    store.setDateToSelectedYYYYMM(selectedDate);
+    handleToggleShowCalendar();
+    // se estivesse verdadeiramente reativo o set Selected acima não precisaria dessas 3 linhas de baixo...
+    splittedSelectedYYYYMM = store.getSelectedYYYYMM().split("-");
+    selectedYear = Number(splittedSelectedYYYYMM[0]);
+    selectedMonth = Number(splittedSelectedYYYYMM[1]);
+    
 }
-
-
 </script>
 
 <template>
     <aside>
-        <ul v-if="years.length <= 1">{{ currentYear }}
-            <li v-for="month in months" :key="month">
-                {{ month }}
-            </li>
-        </ul>
-<!-- TODO: Transformar em select para selecionar os anos passados
-        <ul v-if="years.length <= 1">{{ currentYear }}
-            <li v-for="month in months" :key="month">
-                {{ month }}
-            </li>
-        </ul> -->
+        <div class="selectedYYYYMM" @click="handleToggleShowCalendar()">{{  store.getSelectedYYYYMM() }}</div>
+        <month-picker v-if="showCalendar" variant="dark" @input="selectYearMonth($event)"
+        :default-year="selectedYear" :default-month="selectedMonth"/>    
     </aside>
 </template>
+
+<style>
+    .selectedYYYYMM:hover {
+        cursor: pointer;
+    }
+</style>
