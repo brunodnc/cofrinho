@@ -59,7 +59,7 @@ const tables =  {
 
 <template>
     <button @click="handleToggleCreatingNewTable">Nova Tabela</button>
-    <NewTableComponent v-show="creatingNewTable"/>
+    <NewTableComponent v-if="creatingNewTable"/>
     <!-- {{ invoke('greet', { name: 'World'}) }} -->
     <h2>Finanças do mês</h2>    
      <InitialTable :initialTable="initialTable" />
