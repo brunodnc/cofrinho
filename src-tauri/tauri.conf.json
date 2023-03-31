@@ -15,6 +15,12 @@
       "all": false,
       "path": {
         "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$RESOURCE/*"
+        ]
       }
     },
     "bundle": {
