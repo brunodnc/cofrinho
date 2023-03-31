@@ -59,7 +59,9 @@ const tables =  {
 
 <template>
     <button @click="handleToggleCreatingNewTable">Nova Tabela</button>
-    <NewTableComponent v-if="creatingNewTable"/>
+    <Suspense>
+        <NewTableComponent v-if="creatingNewTable"/>
+    </Suspense>
     <!-- {{ invoke('greet', { name: 'World'}) }} -->
     <h2>Monthly Finance </h2>
     <template v-for="(table, i) in tables.initial" :key="i +  ' - ' + table.name">
