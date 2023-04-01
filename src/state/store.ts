@@ -1,4 +1,5 @@
-import { reactive } from 'vue';
+import type { IFinance } from '@/interfaces/interfaces';
+import { reactive, ref } from 'vue';
 
 export const store = reactive({
     _selectedYYYYMM: new Date().getFullYear() + "-" + (new Date().getMonth() + 1),
@@ -12,3 +13,5 @@ export const store = reactive({
         this._selectedYYYYMM = date.getFullYear() + "-" + (date.getMonth() + 1);
     }
 });
+
+export const financeData = ref<IFinance | null>(null);

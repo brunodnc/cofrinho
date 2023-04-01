@@ -28,8 +28,7 @@ import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';
 import { store } from '@/state/store';
-
-
+import { path } from '@tauri-apps/api';
 
 // tauri
 let previousFinanceData = await (await TauriService.getAllFinanceData()).map(data => data?.split(".")[0]);
@@ -38,13 +37,15 @@ let error: Ref<null | string> = ref(null);
 let tableName: Ref<string> = ref("");
 let tableType: Ref<string> = ref("");
 let initialTableCopySelect: Ref<string> = ref("");
-
-
-
+console.log(await path.appDataDir());
 
 async function handleCreateTable() {
     const selectedYYYYMM = store.getSelectedYYYYMM()
-    let data = {} as IFinance;
+    let data = {
+        initial: {},
+        in: [],
+        out: []
+        } as unknown as IFinance;
     if (tableType.value.length < 1 || (tableName.value.length < 1 && (tableType.value === 'in' || tableType.value === 'out'))) {
         error.value = "Please fill the form correctly";
         return null;
@@ -52,32 +53,35 @@ async function handleCreateTable() {
     try {
         // create finantial month data file if it does not exists
         if (!(await TauriService.YYYYMMJSONExists(selectedYYYYMM))) {
-            await TauriService.createYYYYMMJSON(selectedYYYYMM, data)
+            await TauriService.saveFinanceData(selectedYYYYMM, data)
         } else {
             // load this month's table
-            data = await TauriService.getCurrentYYYYMMFinancialData(selectedYYYYMM)
+            data = await TauriService.getCurrentYYYYMMFinancialData(selectedYYYYMM) as IFinance
         }
         if (tableType.value === 'initial') {
-            data.initial = {
+            if (initialTableCopySelect.value.length > 1) {
+                data.initial = (await TauriService.getCurrentYYYYMMFinancialData(initialTableCopySelect.value)).initial
+            } else {
+                data.initial = {
                 name: "Initial table",
                 values: [],
+                }
             }
         }
         if (tableType.value === 'in') {
-            data.in = [{ ...data.in,
+            data.in = [...data.in, { 
                 name: tableName.value,
                 values: [],
             }]
         }
         if (tableType.value === 'out') {
-            data.out = [{ ...data.out,
+            data.out = [...data.out, {
                 name: tableName.value,
                 values: [],
             }] 
         }
         // save table with tauri rust
         await TauriService.saveFinanceData(selectedYYYYMM, data);
-
     } catch(error) {
         console.log(error)
     }

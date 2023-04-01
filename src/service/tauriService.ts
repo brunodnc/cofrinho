@@ -1,13 +1,17 @@
 import type { IFinance } from '@/interfaces/interfaces';
-import { readDir, BaseDirectory, exists, writeTextFile, readTextFile } from '@tauri-apps/api/fs';
+import { readDir, BaseDirectory, exists, writeTextFile, readTextFile, createDir } from '@tauri-apps/api/fs';
 
 export default class TauriService {
 
-    static getFilePath = (YYYYMM: string) => `data/${YYYYMM}.json`
+  static dataDir = BaseDirectory.AppData;
+
+    static getFilePath = (YYYYMM: string) => `data/${YYYYMM}.json`;
+
+    static createDataFolder = async () => createDir('data', { dir: BaseDirectory.AppData, recursive: true });
     
     static async checkIfItHasPreviousFinanceData() {
         try {
-          const entries = await readDir("data", {dir: BaseDirectory.Resource, recursive: true });
+          const entries = await readDir("data", {dir: BaseDirectory.AppData, recursive: true });
           return entries.reduce((acc, cur) => {
             const split: any = cur.name?.split(".")[0].split("-");
             const year = Number(split[0]);
@@ -26,36 +30,36 @@ export default class TauriService {
         } catch ({ message }) {
           console.error(message);
           return false;
-
         }
     }
 
     static async getAllFinanceData() {
-        const entries = await readDir("data", {dir: BaseDirectory.Resource, recursive: true });
+        const entries = await readDir("data", {dir: BaseDirectory.AppData, recursive: true });
         return entries.map(f => f.name);
     }
 
     static async YYYYMMJSONExists(YYYYMM: string) {
       const filepath = this.getFilePath(YYYYMM);
-      const result = await exists(filepath, { dir: BaseDirectory.Resource})
+      const result = await exists(filepath, { dir: BaseDirectory.AppData})
       return result
     }
   
-    static async createYYYYMMJSON(YYYYMM: string, data: IFinance) {
-      const dataStr = JSON.stringify(data);
-      await writeTextFile(this.getFilePath(YYYYMM), dataStr, { dir: BaseDirectory.Resource });
-    }
-  
-    static async getCurrentYYYYMMFinancialData(YYYYMM: string) {
+    static async getCurrentYYYYMMFinancialData(YYYYMM: string): Promise<IFinance | null> {
+      try {
       const filePath = this.getFilePath(YYYYMM);
-      const fileData = await readTextFile(filePath, { dir: BaseDirectory.Resource})
+      const fileData = await readTextFile(filePath, { dir: BaseDirectory.AppData})
       return JSON.parse(fileData);
+      } catch (error) {
+        return null;
+      }
     }
 
     static async saveFinanceData(YYYYMM: string, data: IFinance) {
+      await this.createDataFolder();
       const filePath = this.getFilePath(YYYYMM);
       const strData = JSON.stringify(data);
-      await writeTextFile(filePath, strData, { dir: BaseDirectory.Resource});
+      const result = await writeTextFile(filePath, strData, { dir: BaseDirectory.AppData});
+      console.log(result);
     }
 
 }

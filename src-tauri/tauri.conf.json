@@ -13,18 +13,20 @@
   "tauri": {
     "allowlist": {
       "all": false,
-      "scope": [
-        "/home/bdnc/cofrinho/src-tauri/target/debug/*"
-      ]
-    ,
       "path": {
         "all": true
       },
       "fs": {
         "all": true,
         "scope": [
+          "/home/bdnc/cofrinho/src-tauri/target/debug/*",
           "$RESOURCE/*",
-          "/home/bdnc/cofrinho/src-tauri/target/debug/*"
+          "$RESOURCE/",
+          "/home/bdnc/.local/share/com.tauri.dev/data/*",
+          "/home/bdnc/.local/share/com.tauri.dev/*",
+          "$APPDATA/*",
+          "$APPDATA/",
+          "**"
         ]
       }
     },

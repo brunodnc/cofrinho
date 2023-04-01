@@ -53,6 +53,7 @@ function handleValueChange(event: Event, i: number) {
 
 <template>
     <table>
+        <h3>{{ name }}</h3>
         <tr>
             <th>Description</th>
             <th>Value</th>
