@@ -1,5 +1,6 @@
-import type { IFinance } from '@/interfaces/interfaces';
-import { readDir, BaseDirectory, exists, writeTextFile, readTextFile, createDir } from '@tauri-apps/api/fs';
+import type { IFinance, ITable } from '@/interfaces/interfaces';
+import { financeData } from '@/state/store';
+import { readDir, BaseDirectory, exists, writeTextFile, readTextFile, createDir, removeFile } from '@tauri-apps/api/fs';
 
 export default class TauriService {
 
@@ -58,8 +59,20 @@ export default class TauriService {
       await this.createDataFolder();
       const filePath = this.getFilePath(YYYYMM);
       const strData = JSON.stringify(data);
-      const result = await writeTextFile(filePath, strData, { dir: BaseDirectory.AppData});
-      console.log(result);
+      financeData.value = data;
+      await writeTextFile(filePath, strData, { dir: BaseDirectory.AppData});
+    }
+
+    static async deleteTable(YYYYMM: string, name: string, type: string) {
+      const filePath = this.getFilePath(YYYYMM);
+      const strData  = await readTextFile(filePath, { dir: BaseDirectory.AppData});
+      const data = JSON.parse(strData);
+      if (type !== 'initial') {
+        data[type] = data[type].filter((table: ITable) => table.name !== name);
+      } else {
+        data.initial = {};
+      }
+      await this.saveFinanceData(YYYYMM, data);
     }
 
 }

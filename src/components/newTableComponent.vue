@@ -27,7 +27,7 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';
-import { store } from '@/state/store';
+import { financeData, store } from '@/state/store';
 import { path } from '@tauri-apps/api';
 
 // tauri
@@ -60,7 +60,7 @@ async function handleCreateTable() {
         }
         if (tableType.value === 'initial') {
             if (initialTableCopySelect.value.length > 1) {
-                data.initial = (await TauriService.getCurrentYYYYMMFinancialData(initialTableCopySelect.value)).initial
+                data.initial = (await TauriService.getCurrentYYYYMMFinancialData(initialTableCopySelect.value) as IFinance).initial
             } else {
                 data.initial = {
                 name: "Initial table",
@@ -81,6 +81,7 @@ async function handleCreateTable() {
             }] 
         }
         // save table with tauri rust
+        financeData.value = data;
         await TauriService.saveFinanceData(selectedYYYYMM, data);
     } catch(error) {
         console.log(error)

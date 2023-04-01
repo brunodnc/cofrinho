@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import TauriService from '@/service/tauriService';
+import { store } from '@/state/store';
 import { ref } from 'vue';
 
     
@@ -31,7 +33,6 @@ function deleteTableRow(row: {description: String, value: Number}, index: number
     return null;
 }
 
-
 function handleToggleAddTableRow() {
     addTableRowToggle.value = true
 }
@@ -47,6 +48,10 @@ function handleDescriptionChange(event: Event, i: number) {
 
 function handleValueChange(event: Event, i: number) {
     valuesRef.value[i].value = Number((event.target as HTMLInputElement).value);
+}
+
+async function handleDeleteTable() {
+    await TauriService.deleteTable(store.getSelectedYYYYMM(), props.name, props.type);
 }
 
 </script>
@@ -79,7 +84,7 @@ function handleValueChange(event: Event, i: number) {
                 <td><button @click="addTableRow">Add</button></td>
             </template>
             <button v-else @click="handleToggleAddTableRow">Add</button>
-            
         </tr>
+        <button @click="handleDeleteTable">Delete Table</button>
     </table>
 </template>
