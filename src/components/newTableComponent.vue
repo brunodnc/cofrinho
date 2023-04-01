@@ -26,6 +26,8 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
+import type { IFinance } from '../interfaces/interfaces';
+
 
 
 // tauri
@@ -42,19 +44,37 @@ function handleCreateTable() {
         error.value = "Please fill the form correctly";
         return null;
     }
-    let newTable = null;
-    if (tableType.value === 'initial') {
-        return null;
+    try {
+        let table = {} as IFinance;
+        // load this month's table
+        // let table = ;
+        if (tableType.value === 'initial') {
+            table.initial = {
+                name: "Initial table",
+                values: [],
+            }
+        }
+        if (tableType.value === 'in') {
+            table.in = [{ ...table.in,
+                name: tableName.value,
+                values: [],
+            }]
+        }
+        if (tableType.value === 'out') {
+            table.out = [{ ...table.out,
+                name: tableName.value,
+                values: [],
+            }] 
+        }
+        // save table with tauri rust
+        
+        
+        return table;
+
+
+    } catch({ message }) {
+        console.log(message)
     }
-    if (tableType.value === 'in') {
-        return null;
-    }
-    if (tableType.value === 'out') {
-        return null;   
-    }
-    // save table with tauri rust
-    newTable = null
     
-    return newTable;
 }
 </script>
