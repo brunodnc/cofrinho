@@ -19,7 +19,8 @@
       "fs": {
         "all": true,
         "scope": [
-          "$RESOURCE/*"
+          "$RESOURCE/*",
+          "/home/bdnc/cofrinho/src-tauri/target/debug/"
         ]
       }
     },

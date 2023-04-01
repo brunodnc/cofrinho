@@ -10,7 +10,7 @@
             <label for="initialTableCopySelect">Copy initial table from: </label>
             <select id="initialTableCopySelect" v-model="initialTableCopySelect">
                 <option disabled value="">None</option>
-                <!-- <option v-for ... com os meses que já existem... criar um método no rust para descobrir -->
+                <option v-for="financeData in previousFinanceData" v-bind:key="financeData"></option>
             </select>
         </div>
         <div v-if="tableType === 'in' || tableType === 'out'">
@@ -25,12 +25,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Ref } from 'vue';
-import { resourceDir } from '@tauri-apps/api/path';
-const resourceDirPath = await resourceDir();
-console.log(resourceDirPath);
+import TauriService from '../service/tauriService';
 
 
-
+// tauri
+let previousFinanceData = await (await TauriService.getAllFinanceData()).map(data => data?.split(".")[0]);
+// vue
 let error: Ref<null | string> = ref(null);
 let tableName: Ref<string> = ref("");
 let tableType: Ref<string> = ref("");
