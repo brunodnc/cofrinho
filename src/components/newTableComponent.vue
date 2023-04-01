@@ -18,7 +18,7 @@
             <input id="tableNameInput" v-model="tableName">
         </div>
         <span id="error"> {{ error }}</span>
-        <button @click="handleCreateTable">Create Table</button>
+        <button @click.prevent="handleCreateTable">Create Table</button>
     </form>
 </template>
 
@@ -27,6 +27,7 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';
+import { store } from '@/state/store';
 
 
 
@@ -39,41 +40,46 @@ let tableType: Ref<string> = ref("");
 let initialTableCopySelect: Ref<string> = ref("");
 
 
-function handleCreateTable() {
+
+
+async function handleCreateTable() {
+    const selectedYYYYMM = store.getSelectedYYYYMM()
+    let data = {} as IFinance;
     if (tableType.value.length < 1 || (tableName.value.length < 1 && (tableType.value === 'in' || tableType.value === 'out'))) {
         error.value = "Please fill the form correctly";
         return null;
     }
     try {
-        let table = {} as IFinance;
-        // load this month's table
-        // let table = ;
+        // create finantial month data file if it does not exists
+        if (!(await TauriService.YYYYMMJSONExists(selectedYYYYMM))) {
+            await TauriService.createYYYYMMJSON(selectedYYYYMM, data)
+        } else {
+            // load this month's table
+            data = await TauriService.getCurrentYYYYMMFinancialData(selectedYYYYMM)
+        }
         if (tableType.value === 'initial') {
-            table.initial = {
+            data.initial = {
                 name: "Initial table",
                 values: [],
             }
         }
         if (tableType.value === 'in') {
-            table.in = [{ ...table.in,
+            data.in = [{ ...data.in,
                 name: tableName.value,
                 values: [],
             }]
         }
         if (tableType.value === 'out') {
-            table.out = [{ ...table.out,
+            data.out = [{ ...data.out,
                 name: tableName.value,
                 values: [],
             }] 
         }
         // save table with tauri rust
-        
-        
-        return table;
+        await TauriService.saveFinanceData(selectedYYYYMM, data);
 
-
-    } catch({ message }) {
-        console.log(message)
+    } catch(error) {
+        console.log(error)
     }
     
 }

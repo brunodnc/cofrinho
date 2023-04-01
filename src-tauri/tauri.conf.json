@@ -13,6 +13,10 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "scope": [
+        "/home/bdnc/cofrinho/src-tauri/target/debug/*"
+      ]
+    ,
       "path": {
         "all": true
       },
@@ -20,7 +24,7 @@
         "all": true,
         "scope": [
           "$RESOURCE/*",
-          "/home/bdnc/cofrinho/src-tauri/target/debug/"
+          "/home/bdnc/cofrinho/src-tauri/target/debug/*"
         ]
       }
     },
