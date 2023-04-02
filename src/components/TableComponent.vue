@@ -17,8 +17,18 @@ let addTableRowToggle = ref(false);
 let addTableRowDescription = ref("")
 let addTableRowValue = ref("")
 
-function editTableRow(row: {description: string, value: number}, index: number) {
+async function editTableRow(name: string, type: string, value: {description: string, value: number}, index: number) {
     editingTableList.value[index] = false;
+    let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
+    let selectedTable = null;
+    if (type === 'initial') {
+        selectedTable = data[type];
+    } else {
+        selectedTable = data[type]?.find((table: ITable) => table.name === name);
+    }
+    selectedTable.values = selectedTable.values.filter((v: IRow) => v.description !== value.description)
+    selectedTable.values.push(value);
+    await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
 function toggleEditingOff(index: number) {
@@ -77,7 +87,7 @@ async function handleDeleteTable() {
             <template v-if="editingTableList[index]">
                 <td><input type="textarea" :value="v.description" @change="handleDescriptionChange($event, index)"></td>
                 <td><input type="textarea" :value="v.value" @change="handleValueChange($event, index)"></td>
-                <td><button @click="editTableRow(v, index)">Confirm</button></td>
+                <td><button @click="editTableRow(name, type, v, index)">Confirm</button></td>
                 <td><button @click="toggleEditingOff(index)">Cancel</button></td>
             </template>
             <template v-else>
