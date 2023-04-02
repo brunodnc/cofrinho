@@ -2,7 +2,7 @@
     <form>
         <label for="tableTypeSelect">Table type: </label> <select id="tableTypeSelect" v-model="tableType">
             <option disabled value="">Select Type</option>
-            <option value="initial">Initial Table</option>
+            <option v-if="!hasInitialTable" value="initial">Initial Table</option>
             <option value="in">In</option>
             <option value="out">Out</option>
         </select>
@@ -10,7 +10,7 @@
             <label for="initialTableCopySelect">Copy initial table from: </label>
             <select id="initialTableCopySelect" v-model="initialTableCopySelect">
                 <option disabled value="">None</option>
-                <option v-for="financeData in previousFinanceData" v-bind:key="financeData"></option>
+                <option v-for="fileName in previousFinanceData" v-bind:key="fileName">{{ fileName }}</option>
             </select>
         </div>
         <div v-if="tableType === 'in' || tableType === 'out'">
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';
@@ -31,7 +31,11 @@ import { financeData, store } from '@/state/store';
 import { path } from '@tauri-apps/api';
 
 // tauri
-let previousFinanceData = await (await TauriService.getAllFinanceData()).map(data => data?.split(".")[0]);
+let previousFinanceData = ref((await TauriService.getAllFinanceData()).map(d => d?.split(".")[0]).sort());
+const selectedYYYYMM = store.getSelectedYYYYMM();
+
+const hasInitialTable = ref(await TauriService.hasInitialTable(selectedYYYYMM));
+
 // vue
 let error: Ref<null | string> = ref(null);
 let tableName: Ref<string> = ref("");

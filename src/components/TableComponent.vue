@@ -5,9 +5,9 @@ import { ref } from 'vue';
 
     
 const props = defineProps<{
-    type: String,
-    name: String,
-    values: {description: String, value: Number}[],
+    type: string,
+    name: string,
+    values: {description: string, value: number}[],
     }>()
 
 let editingTableList = ref(props.values.map( v => false));
@@ -16,7 +16,7 @@ let addTableRowToggle = ref(false);
 let addTableRowDescription = ref("")
 let addTableRowValue = ref("")
 
-function editTableRow(row: {description: String, value: Number}, index: number) {
+function editTableRow(row: {description: string, value: number}, index: number) {
     editingTableList.value[index] = false;
     return null;
 }
@@ -29,7 +29,7 @@ function handleEditTableRowToggle(index: number) {
     editingTableList.value[index] = true;
 }
 
-function deleteTableRow(row: {description: String, value: Number}, index: number) {
+function deleteTableRow(row: {description: string, value: number}, index: number) {
     return null;
 }
 

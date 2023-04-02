@@ -9,6 +9,16 @@ export default class TauriService {
     static getFilePath = (YYYYMM: string) => `data/${YYYYMM}.json`;
 
     static createDataFolder = async () => createDir('data', { dir: BaseDirectory.AppData, recursive: true });
+
+    static async hasInitialTable(YYYYMM: string) {
+      const data: IFinance =  await this.getCurrentYYYYMMFinancialData(YYYYMM) as IFinance;
+      if (data?.initial) {
+        console.log("computed", data?.initial);
+        return true;
+      }
+      console.log("computed", data?.initial);
+      return false;
+    }
     
     static async checkIfItHasPreviousFinanceData() {
         try {
@@ -36,6 +46,7 @@ export default class TauriService {
 
     static async getAllFinanceData() {
         const entries = await readDir("data", {dir: BaseDirectory.AppData, recursive: true });
+        console.log(entries);
         return entries.map(f => f.name);
     }
 

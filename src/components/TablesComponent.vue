@@ -40,12 +40,16 @@ watch(
     <template v-if="financeData">
         <!-- {{ invoke('greet', { name: 'World'}) }} -->
         <h2>Monthly FinanceData </h2>
-        <TableComponent :values="(financeData as IFinance).initial.values" :type="'initial'" :name="(financeData as IFinance).initial.name" />
-        <template v-for="(table, i) in (financeData as IFinance).in" :key="i +  ' - ' + table.name">
-            <TableComponent :values="table.values" :type="'in'" :name="table.name" />
+        <TableComponent v-if="financeData.initial" :values="(financeData as IFinance).initial?.values || []" :type="'initial'" :name="(financeData as IFinance).initial.name" />
+        <template v-if="financeData.in">
+            <template v-for="(table, i) in (financeData as IFinance).in" :key="i +  ' - ' + table.name">
+                <TableComponent :values="table?.values || []" :type="'in'" :name="table.name" />
+            </template>
         </template>
-        <template v-for="(table, i) in (financeData as IFinance).out" :key="i +  ' - ' + table.name">
-            <TableComponent :values="table.values" :type="'out'" :name="table.name" />
+        <template v-if="financeData.in">
+            <template v-for="(table, i) in (financeData as IFinance).out" :key="i +  ' - ' + table.name">
+                <TableComponent :values="table?.values || []" :type="'out'" :name="table.name" />
+            </template>
         </template>
     </template>
 </template>
