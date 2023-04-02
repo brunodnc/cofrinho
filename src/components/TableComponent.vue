@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IRow } from '@/interfaces/interfaces';
+import type { IFinance, IRow, ITable } from '@/interfaces/interfaces';
 import TauriService from '@/service/tauriService';
 import { store } from '@/state/store';
 import { ref } from 'vue';
@@ -19,7 +19,6 @@ let addTableRowValue = ref("")
 
 function editTableRow(row: {description: string, value: number}, index: number) {
     editingTableList.value[index] = false;
-    return null;
 }
 
 function toggleEditingOff(index: number) {
@@ -30,17 +29,27 @@ function handleEditTableRowToggle(index: number) {
     editingTableList.value[index] = true;
 }
 
-function deleteTableRow(row: {description: string, value: number}, index: number) {
-    return null;
+function deleteTableRow(row: IRow, index: number) {
+    
 }
 
 function handleToggleAddTableRow() {
     addTableRowToggle.value = true
 }
 
-function addTableRow(name: string, type: string, value: IRow) {
+async function addTableRow(name: string, type: string, value: IRow) {
     addTableRowToggle.value = false
-    return null;
+    let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
+    console.log(data);
+    let selectedTable = null;
+    if (type === 'initial') {
+        selectedTable = data[type];    
+    } else {
+        selectedTable = data[type]?.find((table: ITable) => table.name === name);
+    }
+    selectedTable.values.push(value);
+    console.log(data);
+    await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
 function handleDescriptionChange(event: Event, i: number) {
@@ -82,7 +91,7 @@ async function handleDeleteTable() {
             <template v-if="addTableRowToggle">
                 <td><input v-model="addTableRowDescription" type="textarea"/></td>
                 <td><input v-model="addTableRowValue" type="textarea" /></td>
-                <td><button @click="addTableRow(name, type, {description: addTableRowDescription, value: addTableRowValue})">Add</button></td>
+                <td><button @click="addTableRow(name, type, {description: addTableRowDescription, value: Number(addTableRowValue)})">Add</button></td>
             </template>
             <button v-else @click="handleToggleAddTableRow">Add</button>
         </tr>

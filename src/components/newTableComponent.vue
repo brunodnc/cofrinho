@@ -43,7 +43,7 @@ let tableType: Ref<string> = ref("");
 let initialTableCopySelect: Ref<string> = ref("");
 console.log(await path.appDataDir());
 
-async function handleCreateTable() {
+async function handleCreateTable(): Promise<null> {
     const selectedYYYYMM = store.getSelectedYYYYMM()
     let data = {
         initial: {},
@@ -85,8 +85,10 @@ async function handleCreateTable() {
             }] 
         }
         // save table with tauri rust
+        console.log("data na criação: ", data);
         financeData.value = data;
         await TauriService.saveFinanceData(selectedYYYYMM, data);
+        return null;
     } catch(error) {
         console.log(error)
     }
