@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { IRow } from '@/interfaces/interfaces';
 import TauriService from '@/service/tauriService';
 import { store } from '@/state/store';
 import { ref } from 'vue';
@@ -10,7 +11,7 @@ const props = defineProps<{
     values: {description: string, value: number}[],
     }>()
 
-let editingTableList = ref(props.values.map( v => false));
+let editingTableList = ref(props.values.map( () => false));
 let valuesRef = ref(props.values);
 let addTableRowToggle = ref(false);
 let addTableRowDescription = ref("")
@@ -37,7 +38,7 @@ function handleToggleAddTableRow() {
     addTableRowToggle.value = true
 }
 
-function addTableRow() {
+function addTableRow(name: string, type: string, value: IRow) {
     addTableRowToggle.value = false
     return null;
 }
@@ -81,7 +82,7 @@ async function handleDeleteTable() {
             <template v-if="addTableRowToggle">
                 <td><input v-model="addTableRowDescription" type="textarea"/></td>
                 <td><input v-model="addTableRowValue" type="textarea" /></td>
-                <td><button @click="addTableRow">Add</button></td>
+                <td><button @click="addTableRow(name, type, {description: addTableRowDescription, value: addTableRowValue})">Add</button></td>
             </template>
             <button v-else @click="handleToggleAddTableRow">Add</button>
         </tr>
