@@ -19,6 +19,7 @@ let addTableRowValue = ref("")
 
 async function editTableRow(name: string, type: string, value: {description: string, value: number}, index: number) {
     editingTableList.value[index] = false;
+    console.log(value);
     let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
     let selectedTable = null;
     if (type === 'initial') {
