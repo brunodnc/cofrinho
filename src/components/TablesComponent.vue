@@ -19,8 +19,7 @@ function handleToggleCreatingNewTable() {
 async function refreshFinanceData() {
     financeData.value = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
 }
-
-
+const computedFinanceData = computed(() => (financeData.value as IFinance));
 watch(
   () => store.getSelectedYYYYMM(),
   async (newValue) => {
@@ -38,17 +37,17 @@ watch(
     <Suspense>
         <NewTableComponent v-if="creatingNewTable"/>
     </Suspense>
-    <template v-if="financeData">
+    <template v-if="computedFinanceData">
         <!-- {{ invoke('greet', { name: 'World'}) }} -->
-        <h2>Monthly FinanceData </h2>
-        <TableComponent v-if="financeData.initial" :values="(financeData as IFinance).initial?.values || []" :type="'initial'" :name="(financeData as IFinance).initial.name || 'Table without name'" />
-        <template v-if="financeData.in">
-            <template v-for="(table, i) in (financeData as IFinance).in" :key="i +  ' - ' + table.name">
+        <h2>Monthly finance table </h2>
+        <TableComponent v-if="computedFinanceData.initial.name" :values="(computedFinanceData as IFinance).initial?.values || []" :type="'initial'" :name="(computedFinanceData as IFinance).initial.name" />
+        <template v-if="computedFinanceData.in">
+            <template v-for="(table, i) in (computedFinanceData as IFinance).in" :key="i +  ' - ' + table.name">
                 <TableComponent :values="table?.values || []" :type="'in'" :name="table.name || 'Table without name'" />
             </template>
         </template>
-        <template v-if="financeData.in">
-            <template v-for="(table, i) in (financeData as IFinance).out" :key="i +  ' - ' + table.name">
+        <template v-if="computedFinanceData.in">
+            <template v-for="(table, i) in (computedFinanceData as IFinance).out" :key="i +  ' - ' + table.name">
                 <TableComponent :values="table?.values || []" :type="'out'" :name="table.name || 'Table without name'" />
             </template>
         </template>
