@@ -9,7 +9,7 @@ import TablesComponent from './components/TablesComponent.vue';
   <CalendarComponentVue />
   <HeaderComponent />
   <Suspense>
-  <TablesComponent />
+    <TablesComponent />
   </Suspense>
   <!-- <nav>
     <RouterLink to="/">Home</RouterLink>

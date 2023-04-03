@@ -27,7 +27,7 @@ import { ref, computed } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';
-import { financeData, store } from '@/state/store';
+import { financeData, store, creatingNewTable } from '@/state/store';
 import { path } from '@tauri-apps/api';
 
 // tauri
@@ -85,9 +85,9 @@ async function handleCreateTable(): Promise<null> {
             }] 
         }
         // save table with tauri rust
-        console.log("data na criação: ", data);
-        financeData.value = data;
+        creatingNewTable.value = false;
         await TauriService.saveFinanceData(selectedYYYYMM, data);
+        financeData.value = data;
         return null;
     } catch(error) {
         console.log(error)

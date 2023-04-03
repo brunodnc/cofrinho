@@ -15,3 +15,5 @@ export const store = reactive({
 });
 
 export const financeData = ref<IFinance | null>(null);
+
+export const creatingNewTable = ref(false);

@@ -72,7 +72,6 @@ export default class TauriService {
     const filePath = this.getFilePath(YYYYMM);
     const strData = JSON.stringify(data);
     financeData.value = data;
-    console.log(data.initial.name);
     await writeTextFile(filePath, strData, { dir: BaseDirectory.AppData});
   }
 

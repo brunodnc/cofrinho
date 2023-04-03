@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TableComponent from './TableComponent.vue';
 import { invoke } from '@tauri-apps/api';
-import { store, financeData } from '@/state/store';
+import { store, financeData, creatingNewTable } from '@/state/store';
 import NewTableComponent from './newTableComponent.vue';
 import { ref, computed, watch } from 'vue';
 import TauriService from '@/service/tauriService';
@@ -10,7 +10,7 @@ import type { Ref } from 'vue';
 
 
 
-const creatingNewTable = ref(false);
+
 
 function handleToggleCreatingNewTable() {
     creatingNewTable.value = !creatingNewTable.value;
@@ -24,7 +24,6 @@ watch(
   () => store.getSelectedYYYYMM(),
   async (newValue) => {
     financeData.value = await TauriService.getCurrentYYYYMMFinancialData(newValue);
-    console.log("fd: ", financeData.value)
   },
   { immediate: true },
 );
@@ -35,12 +34,12 @@ watch(
     <button @click="refreshFinanceData">Refresh</button>
     <button @click="handleToggleCreatingNewTable">New Table</button>
     <Suspense>
-        <NewTableComponent v-if="creatingNewTable"/>
+        <NewTableComponent v-if="creatingNewTable" />
     </Suspense>
     <template v-if="computedFinanceData">
         <!-- {{ invoke('greet', { name: 'World'}) }} -->
         <h2>Monthly finance table </h2>
-        <TableComponent v-if="computedFinanceData.initial.name" :values="(computedFinanceData as IFinance).initial?.values || []" :type="'initial'" :name="(computedFinanceData as IFinance).initial.name" />
+        <TableComponent :values="(computedFinanceData as IFinance).initial?.values || []" :type="'initial'" :name="(computedFinanceData as IFinance).initial.name || 'Initial table'" />
         <template v-if="computedFinanceData.in">
             <template v-for="(table, i) in (computedFinanceData as IFinance).in" :key="i +  ' - ' + table.name">
                 <TableComponent :values="table?.values || []" :type="'in'" :name="table.name || 'Table without name'" />
@@ -51,5 +50,8 @@ watch(
                 <TableComponent :values="table?.values || []" :type="'out'" :name="table.name || 'Table without name'" />
             </template>
         </template>
+    </template>
+    <template v-else>
+        <p>No financial data found</p>
     </template>
 </template>
