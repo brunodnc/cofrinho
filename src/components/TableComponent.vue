@@ -8,7 +8,7 @@ import { ref } from 'vue';
 const props = defineProps<{
     type: string,
     name: string,
-    values: {description: string, value: number}[],
+    values: IRow[],
     }>()
 
 let editingTableList = ref(props.values.map( () => false));
@@ -17,17 +17,16 @@ let addTableRowToggle = ref(false);
 let addTableRowDescription = ref("")
 let addTableRowValue = ref("")
 
-async function editTableRow(name: string, type: string, value: {description: string, value: number}, index: number) {
+async function editTableRow(name: string, type: string, value: IRow, index: number) {
     editingTableList.value[index] = false;
-    console.log(value);
     let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
     let selectedTable = null;
     if (type === 'initial') {
         selectedTable = data[type];
     } else {
-        selectedTable = data[type]?.find((table: ITable) => table.name === name);
+        selectedTable = data[type]?.find((table: ITable) => table.name === name );
     }
-    selectedTable.values = selectedTable.values.filter((v: IRow) => v.description !== value.description)
+    selectedTable.values = selectedTable.values.filter((v: IRow) => v.id !== value.id)
     selectedTable.values.push(value);
     await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
@@ -40,8 +39,17 @@ function handleEditTableRowToggle(index: number) {
     editingTableList.value[index] = true;
 }
 
-function deleteTableRow(row: IRow, index: number) {
-    
+async function deleteTableRow(name: string, type: string, id: number, index: number) {
+    editingTableList.value[index] = false;
+    let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
+    let selectedTable = null;
+    if (type === 'initial') {
+        selectedTable = data[type];
+    } else {
+        selectedTable = data[type]?.find((table: ITable) => table.name === name );
+    }
+    selectedTable.values = selectedTable.values.filter((v: IRow) => v.id !== id)
+    await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
 function handleToggleAddTableRow() {
@@ -63,12 +71,12 @@ async function addTableRow(name: string, type: string, value: IRow) {
     await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
-function handleDescriptionChange(event: Event, i: number) {
-    valuesRef.value[i].description = (event.target as HTMLInputElement).value;
+function handleDescriptionChange(event: Event, id: number) {
+    valuesRef.value.find(v => v.id === id).description = (event.target as HTMLInputElement).value;
 }
 
-function handleValueChange(event: Event, i: number) {
-    valuesRef.value[i].value = Number((event.target as HTMLInputElement).value);
+function handleValueChange(event: Event, id: number) {
+    valuesRef.value.find(v => v.id === id).value = Number((event.target as HTMLInputElement).value);
 }
 
 async function handleDeleteTable() {
@@ -84,10 +92,10 @@ async function handleDeleteTable() {
             <th>Description</th>
             <th>Value</th>
         </tr>
-        <tr v-for="(v, index) in values" :key="index+ ' - ' + v.description + ' - ' + v.value">
+        <tr v-for="(v, index) in values" :key="v.id">
             <template v-if="editingTableList[index]">
-                <td><input type="textarea" :value="v.description" @change="handleDescriptionChange($event, index)"></td>
-                <td><input type="textarea" :value="v.value" @change="handleValueChange($event, index)"></td>
+                <td><input type="textarea" :value="v.description" @change="handleDescriptionChange($event, v.id)"></td>
+                <td><input type="textarea" :value="v.value" @change="handleValueChange($event, v.id)"></td>
                 <td><button @click="editTableRow(name, type, v, index)">Confirm</button></td>
                 <td><button @click="toggleEditingOff(index)">Cancel</button></td>
             </template>
@@ -95,14 +103,14 @@ async function handleDeleteTable() {
                 <td>{{ v.description }}</td>
                 <td>{{ v.value }}</td>
                 <td><button @click="handleEditTableRowToggle(index)">Edit</button></td>
-                <td><button @click="deleteTableRow(v, index)">Delete</button></td>
+                <td><button @click="deleteTableRow(name, type, v.id, index)">Delete</button></td>
             </template>
         </tr>
         <tr>
             <template v-if="addTableRowToggle">
                 <td><input v-model="addTableRowDescription" type="textarea"/></td>
                 <td><input v-model="addTableRowValue" type="textarea" /></td>
-                <td><button @click="addTableRow(name, type, {description: addTableRowDescription, value: Number(addTableRowValue)})">Add</button></td>
+                <td><button @click="addTableRow(name, type, { id: values.length + 1, description: addTableRowDescription, value: Number(addTableRowValue)})">Add</button></td>
             </template>
             <button v-else @click="handleToggleAddTableRow">Add</button>
         </tr>

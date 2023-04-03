@@ -1,6 +1,7 @@
 export interface IRow {
     description: string;
     value: number;
+    id: number;
 }
 
 export interface ITable {
