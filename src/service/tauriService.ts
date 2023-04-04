@@ -13,11 +13,9 @@ export default class TauriService {
 
   static async hasInitialTable(YYYYMM: string) {
     const data: IFinance =  await this.getCurrentYYYYMMFinancialData(YYYYMM) as IFinance;
-    if (data?.initial) {
-      console.log("computed", data?.initial);
+    if (data?.initial?.name) {
       return true;
     }
-    console.log("computed", data?.initial);
     return false;
   }
   

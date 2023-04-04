@@ -2,7 +2,7 @@
 import type { IFinance, IRow, ITable } from '@/interfaces/interfaces';
 import TauriService from '@/service/tauriService';
 import { store } from '@/state/store';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
     
 const props = defineProps<{
@@ -17,6 +17,10 @@ let addTableRowToggle = ref(false);
 let addTableRowDescription = ref("")
 let addTableRowValue = ref("")
 
+let computedTotal = computed(() => valuesRef.value
+    .map((v) => v.value)
+    .reduce((acc, cur) => acc + Number(cur), 0));
+
 async function editTableRow(name: string, type: string, value: IRow, index: number) {
     editingTableList.value[index] = false;
     let data: any = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
@@ -28,6 +32,8 @@ async function editTableRow(name: string, type: string, value: IRow, index: numb
     }
     selectedTable.values = selectedTable.values.filter((v: IRow) => v.id !== value.id)
     selectedTable.values.push(value);
+    valuesRef.value.find((v) => v.id === value.id).value = value.value;
+    valuesRef.value.find((v) => v.id === value.id).description = value.description;
     await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
@@ -48,7 +54,9 @@ async function deleteTableRow(name: string, type: string, id: number, index: num
     } else {
         selectedTable = data[type]?.find((table: ITable) => table.name === name );
     }
+
     selectedTable.values = selectedTable.values.filter((v: IRow) => v.id !== id)
+    valuesRef.value = valuesRef.value.filter((v) => v.id !== id);
     await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 
@@ -67,7 +75,7 @@ async function addTableRow(name: string, type: string, value: IRow) {
         selectedTable = data[type]?.find((table: ITable) => table.name === name);
     }
     selectedTable.values.push(value);
-    console.log(data);
+    valuesRef.value.push(value);
     await TauriService.saveFinanceData(store.getSelectedYYYYMM(), data);
 }
 

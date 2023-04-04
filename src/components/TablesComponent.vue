@@ -36,12 +36,16 @@ watch(
     </Suspense>
     <template v-if="computedFinanceData">
         <h2>Monthly finance table </h2>
+        <p>Total: 0</p>
+        <h3>Initial Table</h3>
         <TableComponent v-if="computedFinanceData.initial.name" :values="(computedFinanceData as IFinance).initial?.values || []" :type="'initial'" :name="(computedFinanceData as IFinance).initial.name || 'Initial table'" />
+        <h3>"In" Table</h3>
         <template v-if="computedFinanceData.in">
             <template v-for="(table, i) in (computedFinanceData as IFinance).in" :key="i +  ' - ' + table.name">
                 <TableComponent :values="table?.values || []" :type="'in'" :name="table.name || 'Table without name'" />
             </template>
         </template>
+        <h3>"Out" Table</h3>
         <template v-if="computedFinanceData.in">
             <template v-for="(table, i) in (computedFinanceData as IFinance).out" :key="i +  ' - ' + table.name">
                 <TableComponent :values="table?.values || []" :type="'out'" :name="table.name || 'Table without name'" />
