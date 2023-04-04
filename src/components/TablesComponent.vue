@@ -5,12 +5,33 @@ import NewTableComponent from './newTableComponent.vue';
 import { computed, watch } from 'vue';
 import TauriService from '@/service/tauriService';
 import type { IFinance } from '@/interfaces/interfaces';
+import { financeDataAreEqual } from '@/service/globalService';
 
 function handleToggleCreatingNewTable() {
     creatingNewTable.value = !creatingNewTable.value;
 }
 
 const computedFinanceData = computed(() => (financeData.value as IFinance));
+
+const computedTotalFinance = computed(() => {
+    const data = financeData.value;
+    const initialValues = data.initial.values.reduce((acc, cur) => {
+        return acc += cur.value;
+    }, 0);
+    const inValues = data.in.reduce((acc, cur) => {
+        const totalTableValue = cur.values.reduce((acc, cur) => {
+        return acc += cur.value;
+    }, 0);
+        return acc += totalTableValue;
+    }, 0);
+    const outValues = data.out.reduce((acc, cur) => {
+        const totalTableValue = cur.values.reduce((acc, cur) => {
+        return acc += cur.value;
+    }, 0);
+        return acc -= totalTableValue;
+    }, 0)
+    return initialValues + inValues + outValues;
+})
 watch(
   () => store.getSelectedYYYYMM(),
   async (newValue) => {
@@ -29,7 +50,7 @@ watch(
     </Suspense>
     <template v-if="computedFinanceData">
         <h2>Monthly finance table </h2>
-        <p>Total: 0</p>
+        <p>Total: {{ computedTotalFinance || 0 }}</p>
         <h3>Initial Table</h3>
         <TableComponent v-if="computedFinanceData.initial.name" :values="(computedFinanceData as IFinance).initial?.values || []" :type="'initial'" :name="(computedFinanceData as IFinance).initial.name || 'Initial table'" />
         <h3>"In" Table</h3>
