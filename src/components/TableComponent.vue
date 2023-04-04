@@ -87,7 +87,7 @@ async function handleDeleteTable() {
 
 <template>
     <table>
-        <h3>{{ name }}</h3>
+        <h3>{{ name }} - Total: {{ computedTotal || 0 }}</h3>
         <tr>
             <th>Description</th>
             <th>Value</th>
