@@ -6,17 +6,10 @@ import { computed, watch } from 'vue';
 import TauriService from '@/service/tauriService';
 import type { IFinance } from '@/interfaces/interfaces';
 
-
-
-
-
 function handleToggleCreatingNewTable() {
     creatingNewTable.value = !creatingNewTable.value;
 }
 
-async function refreshFinanceData() {
-    financeData.value = await TauriService.getCurrentYYYYMMFinancialData(store.getSelectedYYYYMM());
-}
 const computedFinanceData = computed(() => (financeData.value as IFinance));
 watch(
   () => store.getSelectedYYYYMM(),
@@ -29,7 +22,7 @@ watch(
 </script>
 
 <template>
-    <button @click="refreshFinanceData">Refresh</button>
+    <div class="tablesComponent">
     <button @click="handleToggleCreatingNewTable">New Table</button>
     <Suspense>
         <NewTableComponent v-if="creatingNewTable" />
@@ -55,4 +48,11 @@ watch(
     <template v-else>
         <p>No financial data found</p>
     </template>
+</div>
 </template>
+
+<style>
+    .tablesComponent {
+        padding: 10px;
+    }
+</style>

@@ -94,7 +94,7 @@ async function handleDeleteTable() {
 </script>
 
 <template>
-    <table>
+    <table class="table">
         <h3>{{ name }} - Total: {{ computedTotal || 0 }}</h3>
         <tr>
             <th>Description</th>
@@ -125,3 +125,9 @@ async function handleDeleteTable() {
         <button @click="handleDeleteTable">Delete Table</button>
     </table>
 </template>
+
+<style>
+    .table {
+        border: 1px solid black;
+    }
+</style>

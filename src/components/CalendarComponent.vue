@@ -35,6 +35,16 @@ function selectYearMonth(event: {from: Date, to: Date}) {
 </template>
 
 <style>
+
+    aside {
+        border-bottom: 4px ridge #94ff85;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    aside:hover {
+        background-color: #94ff85;
+    }
     .selectedYYYYMM:hover {
         cursor: pointer;
     }

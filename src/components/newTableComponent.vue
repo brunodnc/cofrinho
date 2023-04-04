@@ -22,6 +22,11 @@
     </form>
 </template>
 
+<style>
+    form {
+    }
+</style>
+
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { Ref } from 'vue';
@@ -92,6 +97,5 @@ async function handleCreateTable(): Promise<null> {
     } catch(error) {
         console.log(error)
     }
-    
 }
 </script>
