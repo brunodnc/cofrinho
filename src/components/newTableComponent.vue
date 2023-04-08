@@ -22,13 +22,8 @@
     </form>
 </template>
 
-<style>
-    form {
-    }
-</style>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import type { Ref } from 'vue';
 import TauriService from '../service/tauriService';
 import type { IFinance } from '../interfaces/interfaces';

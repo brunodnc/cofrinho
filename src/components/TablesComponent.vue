@@ -5,7 +5,6 @@ import NewTableComponent from './newTableComponent.vue';
 import { computed, watch } from 'vue';
 import TauriService from '@/service/tauriService';
 import type { IFinance } from '@/interfaces/interfaces';
-import { financeDataAreEqual } from '@/service/globalService';
 
 function handleToggleCreatingNewTable() {
     creatingNewTable.value = !creatingNewTable.value;
@@ -30,7 +29,7 @@ const computedTotalFinance = computed(() => {
     }, 0);
         return acc -= totalTableValue;
     }, 0)
-    return initialValues + inValues + outValues;
+    return (initialValues + inValues + outValues).toFixed(2);
 })
 watch(
   () => store.getSelectedYYYYMM(),

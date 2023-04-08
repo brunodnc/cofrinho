@@ -19,7 +19,7 @@ let addTableRowValue = ref("")
 
 let computedTotal = computed(() => valuesRef.value
     .map((v) => v.value)
-    .reduce((acc, cur) => acc + Number(cur), 0));
+    .reduce((acc, cur) => acc + Number(cur), 0).toFixed(2));
 
 async function editTableRow(name: string, type: string, value: IRow, index: number) {
     editingTableList.value[index] = false;
@@ -95,7 +95,8 @@ async function handleDeleteTable() {
 
 <template>
     <table class="table">
-        <h3>{{ name }} - Total: {{ computedTotal || 0 }}</h3>
+        <h3>{{ name }}</h3>
+        <h3>Total:{{ computedTotal || 0 }}</h3>
         <tr>
             <th>Description</th>
             <th>Value</th>
@@ -129,5 +130,18 @@ async function handleDeleteTable() {
 <style>
     .table {
         border: 1px solid black;
+        width: 90vw;
+        margin: 0 auto;
+    }
+
+    h3 {
+        word-wrap: normal;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    td {
+        word-wrap: break-word;
+        white-space: normal;
     }
 </style>
